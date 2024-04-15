@@ -14,7 +14,7 @@ header_text = "FILENAME"
 
 str_pdf = "documents.pdf"
 str_wb = "SQL.xlsx"
-contract_pages_count = 5
+file_pages_count = 5
 
 def confirm_overwrite(outputpdf):
     result = messagebox.askyesnocancel("Confirmation", f"The file {outputpdf} already exists. Do you want to overwrite it?")
@@ -64,11 +64,11 @@ def pdf_extract():
     # Assuming you're working with the first sheet, change it accordingly if needed
     sheet = wb.active
 
-    contract_pages_count = int(entry_page_per_contract.get())
+    file_pages_count = int(entry_page_per_file.get())
 
     pdf_pages_count = len(pdf.pages)
 
-    if pdf_pages_count % contract_pages_count != 0:
+    if pdf_pages_count % file_pages_count != 0:
         update_extraction_failed("mismatched page count between files")
         return
 
@@ -76,7 +76,7 @@ def pdf_extract():
     os.chdir(p.parent)
     # output pdf file name
     total_pages = len(pdf.pages)
-    contract_count = total_pages // contract_pages_count
+    file_count = total_pages // file_pages_count
     success_count = 0
 
     header_cell = find_cell_with_header(sheet, header_text)
@@ -94,11 +94,11 @@ def pdf_extract():
     else:
         print(f"Header cell {header_text} found: {header_cell}")
     
-    for i in range(0, contract_count):
+    for i in range(0, file_count):
         writer = PdfWriter() 
         # adding pages to pdf writer object
-        start_page = i * contract_pages_count
-        end_page = start_page + contract_pages_count
+        start_page = i * file_pages_count
+        end_page = start_page + file_pages_count
 
         column_index = utils.column_index_from_string(h_column)
         cell_value = sheet.cell(row = row_index, column = column_index).value
@@ -133,7 +133,7 @@ def pdf_extract():
         success_count += 1
 
     if (success_count > 0):
-        status_label_text.set(f"successfully extracted {success_count} contract files")
+        status_label_text.set(f"successfully extracted {success_count} files")
     else:
         update_extraction_failed()
 
@@ -200,11 +200,11 @@ status_label.grid(row=9, column=0, columnspan=5)
 
 ### Entry ###
 
-# Entry widget for pages per contract
+# Entry widget for pages per file
 text_var = tk.StringVar()
-entry_page_per_contract = tk.Entry(root, textvariable=text_var, borderwidth=5, width=10, relief=tk.GROOVE)
-text_var.set(str(contract_pages_count))  # Assuming contract_pages_count is defined elsewhere
-entry_page_per_contract.grid(column=1, row=1, columnspan=3, sticky="W")
+entry_page_per_file = tk.Entry(root, textvariable=text_var, borderwidth=5, width=10, relief=tk.GROOVE)
+text_var.set(str(file_pages_count))  # Assuming file_pages_count is defined elsewhere
+entry_page_per_file.grid(column=1, row=1, columnspan=3, sticky="W")
 
 ### Checkbox ###
 
